@@ -1,0 +1,21 @@
+// manifest.json
+{
+  "manifest_version": 2,
+  "name": "Video Timestamp Recorder",
+  "version": "1.0",
+  "description": "Records 'laugh' and 'scream' timestamps in videos playing in the browser window",
+  "permissions": ["activeTab", "downloads", "tabs", "storage"],
+  "browser_action": {
+    "default_icon": "label-pal-icon.png",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "48": "label-pal-icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

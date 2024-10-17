@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Form Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        fieldset { margin-bottom: 20px; border: 1px solid #ddd; padding: 10px; }
+        legend { font-weight: bold; }
+        label { display: block; margin-bottom: 5px; }
+        .option { margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Dynamic Form</h1>
+    <form id="dynamicForm"></form>
+
+    <script>
+        const jsonSchema = [
+            {
+                "type": "SingleChoice",
+                "name": "in_out",
+                "options": ["in_game", "out_of_game", "Other"],
+                "crop": "crops.full_image",
+                "condition": null
+            },
+            {
+                "type": "MultipleChoice",
+                "name": "in_game",
+                "options": ["spectating", "playing"],
+                "crops": ["crops.center_top_2", "crops.full_image"],
+                "condition": "in_out::in_game"
+            },
+            {
+                "type": "MultipleChoice",
+                "name": "visual_cues",
+                "options": ["sniping", "kill_leader_banner", "knocking_down_banner", "killing_banner", "champion_banner"],
+                "crops": ["crops.full_image", "crops.center_top", "crops.center_bottom", "crops.center_bottom", "crops.center"],
+                "condition": "in_game::playing"
+            }
+        ];
+
+        function createFormElement(choice) {
+            const fieldset = document.createElement('fieldset');
+            const legend = document.createElement('legend');
+            legend.textContent = choice.name;
+            fieldset.appendChild(legend);
+
+            choice.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                label.className = 'option';
+                const input = document.createElement('input');
+                input.type = choice.type === 'SingleChoice' ? 'radio' : 'checkbox';
+                input.name = choice.name;
+                input.value = option;
+                input.id = `${choice.name}_${index}`;
+
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(` ${option}`));
+                fieldset.appendChild(label);
+            });
+
+            if (choice.condition) {
+                fieldset.dataset.condition = choice.condition;
+                fieldset.style.display = 'none';
+            }
+
+            return fieldset;
+        }
+
+        function generateForm(schema) {
+            const form = document.getElementById('dynamicForm');
+            schema.forEach(choice => {
+                const element = createFormElement(choice);
+                form.appendChild(element);
+            });
+
+            // Add event listeners for conditional rendering
+            form.addEventListener('change', (event) => {
+                const changedField = event.target.name;
+                const changedValue = event.target.value;
+
+                schema.forEach(choice => {
+                    if (choice.condition) {
+                        const [conditionField, conditionValue] = choice.condition.split('::');
+                        const fieldset = form.querySelector(`fieldset[data-condition="${choice.condition}"]`);
+
+                        if (changedField === conditionField) {
+                            fieldset.style.display = (changedValue === conditionValue) ? 'block' : 'none';
+                        }
+                    }
+                });
+            });
+        }
+
+        generateForm(jsonSchema);
+    </script>
+</body>
+</html>

@@ -1,6 +1,4 @@
-
-// content.js
-let reactions = { laugh: [], scream: [], both: [] };
+let reactions = {};
 
 browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "recordTimestamp") {
@@ -8,8 +6,11 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (video) {
       let currentTime = video.currentTime;
       let formattedTime = formatTime(currentTime);
+      if (!reactions[request.reactionType]) {
+        reactions[request.reactionType] = [];
+      }
       reactions[request.reactionType].push(formattedTime);
-      browser.runtime.sendMessage({action: "updateTimestamps", reactions: reactions});
+      browser.runtime.sendMessage({ action: "updateTimestamps", reactions: reactions });
     }
   } else if (request.action === "updateReactions") {
     reactions = request.reactions;
@@ -21,11 +22,3 @@ function formatTime(seconds) {
   date.setSeconds(seconds);
   return date.toISOString().substr(11, 8);
 }
-
-// Initialize reactions from storage when content script loads
-browser.storage.local.get(null).then((result) => {
-  let tabId = browser.runtime.sendMessage({action: "getTabId"});
-  if (result[tabId]) {
-    reactions = result[tabId];
-  }
-});

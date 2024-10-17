@@ -19,28 +19,69 @@
     .hidden { display: none; }
     .timestamp-entry { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
     .remove-btn { cursor: pointer; color: red; font-weight: bold; font-size: 8px;}
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+    #schemaSection {
+      display: none;
+      margin-bottom: 15px;
+    }
+
+    #schemaSection.visible {
+      display: block;
+    }
+
+    #schemaTextarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 10px;
+    }
+
+    #schemaButtons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    #topButtons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    #topButtons button {
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    #topButtons button:last-child {
+      margin-right: 0;
+    }
+
   </style>
 </head>
 <body>
-  <h2>Record Timestamps</h2>
-  <button id="laughButton">Laugh</button>
-  <button id="screamButton">Scream</button>
-  <button id="bothButton">Both</button>
-  <button id="exportTimestamps">Export Timestamps</button>
-  <div id="timestampColumns">
-    <div id="laughColumn" class="column">
-      <h3 class="hidden">Laugh</h3>
-      <div id="laughTimestamps"></div>
-    </div>
-    <div id="screamColumn" class="column">
-      <h3 class="hidden">Scream</h3>
-      <div id="screamTimestamps"></div>
-    </div>
-    <div id="bothColumn" class="column">
-      <h3 class="hidden">Both</h3>
-      <div id="bothTimestamps"></div>
+  <h3>Record Timestamps</h3>
+  
+  <div id="topButtons">
+    <button id="toggleSchemaButton">Schema</button>
+    <button id="exportTimestamps">Export Timestamps</button>
+  </div>
+
+  <div id="schemaSection">
+    <textarea id="schemaTextarea" placeholder="Paste your schema JSON here"></textarea>
+    <div id="schemaButtons">
+      <button id="loadSchemaButton">Load Schema</button>
     </div>
   </div>
+
+  <div id="labelButtons"></div>
+
+  <div id="timestampColumns"></div>
+
+  <script src="schema.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
+

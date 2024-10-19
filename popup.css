@@ -1,0 +1,136 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f5a623;
+    --background-color: #f4f7f9;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --border-color: #e0e0e0;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    width: 350px;
+    padding: 20px;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  
+  nav {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+  }
+  
+  .btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background-color: darken(var(--secondary-color), 10%);
+  }
+  
+  .card {
+    background-color: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  #schemaTextarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: vertical;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 10px;
+  }
+  
+  #dynamicForm fieldset {
+    border: none;
+    margin-bottom: 15px;
+  }
+  
+  #dynamicForm legend {
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  #dynamicForm label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  #dynamicForm input[type="checkbox"] {
+    margin-right: 8px;
+  }
+  
+  .timestamp-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .timestamp-entry:last-child {
+    border-bottom: none;
+  }
+  
+  .remove-btn {
+    cursor: pointer;
+    color: #e74c3c;
+    font-weight: 700;
+    transition: color 0.3s ease;
+  }
+  
+  .remove-btn:hover {
+    color: darken(#e74c3c, 10%);
+  }

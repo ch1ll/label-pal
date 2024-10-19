@@ -1,15 +1,20 @@
 {
   "manifest_version": 2,
-  "name": "Video Timestamp Recorder",
+  "name": "Timestamp Recorder",
   "version": "1.0",
-  "description": "Records timestamps for video labeling based on custom schemas",
-  "permissions": ["activeTab", "downloads", "tabs", "storage", "<all_urls>"],
+  "description": "Record timestamps with custom schemas",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
   "browser_action": {
     "default_icon": "label-pal-icon.png",
-    "default_popup": "popup.html"
-  },
-  "icons": {
-    "48": "label-pal-icon.png"
+    "default_title": "Timestamp Recorder"
   },
   "content_scripts": [
     {
@@ -17,7 +22,7 @@
       "js": ["content.js"]
     }
   ],
-  "background": {
-    "scripts": ["background.js"]
-  }
+  "web_accessible_resources": [
+    "draggable-window.html"
+  ]
 }

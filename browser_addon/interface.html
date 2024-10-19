@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Timestamp Recorder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #recordTimestampButton, #addLabelButton, #exportButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        #labelsSection {
+            margin-top: 20px;
+        }
+        #labelsList {
+            list-style-type: none;
+            padding: 0;
+        }
+        #labelsList li {
+            padding: 5px 0;
+        }
+        #timestampsList {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+        #timestampsList li {
+            padding: 5px 0;
+        }
+        #addLabelButton {
+            margin-left: 10px;
+        }
+        .removeLabelButton {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Timestamp Recorder</h1>
+    <button id="recordTimestampButton">Record Timestamp</button>
+    <div id="labelsSection">
+        <h2>Labels</h2>
+        <div>
+            <input type="text" id="newLabelInput" placeholder="New label">
+            <button id="addLabelButton">Add Label</button>
+        </div>
+        <ul id="labelsList"></ul>
+    </div>
+    <h2>Timestamps</h2>
+    <ul id="timestampsList"></ul>
+    <!-- Add the Export to JSON button -->
+    <button id="exportButton">Export to JSON</button>
+    <script src="interface.js"></script>
+</body>
+</html>

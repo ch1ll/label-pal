@@ -1,21 +1,21 @@
 document.addEventListener('DOMContentLoaded', async function() {
   console.log('DOMContentLoaded event fired');
 
-  // Create an instance of SchemaManager
   const schemaManager = new SchemaManager();
-
   let reactions = {};
   let currentTabId = null;
   let selectedSchemaText = null;
+  let isLuaSchema = false;
 
   const schemaTextarea = document.getElementById('schemaTextarea');
   const loadSchemaButton = document.getElementById('loadSchemaButton');
   const toggleSchemaButton = document.getElementById('toggleSchemaButton');
   const schemaSection = document.getElementById('schemaSection');
+  const dynamicForm = document.getElementById('dynamicForm');
 
   toggleSchemaButton.addEventListener('click', function() {
-    schemaSection.classList.toggle('visible');
-    toggleSchemaButton.textContent = schemaSection.classList.contains('visible') ? 'Hide Schema' : 'Schema';
+    schemaSection.classList.toggle('hidden');
+    toggleSchemaButton.textContent = schemaSection.classList.contains('hidden') ? 'Schema' : 'Hide Schema';
   });
 
   loadSchemaButton.addEventListener('click', async function() {
@@ -26,91 +26,128 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.log('Attempting to load schema...');
         await schemaManager.loadSchemaFromString(selectedSchemaText);
         console.log('Schema loaded successfully');
-  
-        // Validate the schema structure
-        if (!schemaManager.currentSchema.labels || !Array.isArray(schemaManager.currentSchema.labels)) {
-          throw new Error('Schema must contain a "labels" array.');
-        }
-  
-        // Clear existing timestamp data
+
+        isLuaSchema = !selectedSchemaText.startsWith('{');
+
         clearExistingData();
-        
-        updateLabelButtons();
+        generateDynamicForm();
         console.log('UI updated with new schema');
-        //alert('Schema loaded successfully!');
-        
-        // Hide schema section after successful load
-        schemaSection.classList.remove('visible');
+
+        schemaSection.classList.add('hidden');
         toggleSchemaButton.textContent = 'Schema';
       } catch (error) {
         console.error('Failed to load schema:', error);
-        alert('Failed to load schema. Please check the JSON format and structure.' + error);
+        alert('Failed to load schema. Please check the format. ' + error);
       }
     } else {
       console.log('No schema input provided');
-      alert('Please paste or type the schema JSON before loading.');
+      alert('Please paste or type the schema before loading.');
     }
   });
 
-  document.getElementById('exportTimestamps').addEventListener('click', exportTimestamps);
+  function generateDynamicForm() {
+    console.log('Generating dynamic form');
+    dynamicForm.innerHTML = '';
+    const form = document.createElement('form');
+    form.id = 'schemaForm';
 
-  // Add event listeners for timestamp removal
-  document.getElementById('timestampColumns').addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-btn')) {
-      const type = e.target.getAttribute('data-type');
-      const index = parseInt(e.target.getAttribute('data-index'));
-      removeTimestamp(type, index);
-    }
-  });
-
-  // Add keyboard shortcuts
-  document.addEventListener('keydown', function(event) {
-    const labelOptions = schemaManager.getLabelOptions();
-    for (let option of labelOptions) {
-      if (option.shortcut && event.key === option.shortcut) {
-        recordReaction(option.id);
-        event.preventDefault();
-      }
-    }
-  });
-
-  // Load saved file name and reactions when popup opens
-  await loadSavedState();
-
-  async function updateLabelButtons() {
-    console.log('Updating label buttons');
-    const labelOptions = schemaManager.getLabelOptions();
-    console.log('Label options:', labelOptions);
-    const labelButtonsContainer = document.getElementById('labelButtons');
-    labelButtonsContainer.innerHTML = '';
+    const schema = schemaManager.getLabelOptions();
     
-    labelOptions.forEach(option => {
-      const button = document.createElement('button');
-      button.textContent = option.text;
-      button.addEventListener('click', () => recordReaction(option.id));
-      if (option.shortcut) {
-        button.title = `Shortcut: ${option.shortcut}`;
-      }
-      labelButtonsContainer.appendChild(button);
+    schema.forEach(label => {
+      const fieldset = document.createElement('fieldset');
+      const legend = document.createElement('legend');
+      legend.textContent = label.text;
+      fieldset.appendChild(legend);
+
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.id = label.id;
+      input.name = label.id;
+      input.value = label.text;
+
+      const labelElement = document.createElement('label');
+      labelElement.htmlFor = label.id;
+      labelElement.appendChild(input);
+      labelElement.appendChild(document.createTextNode(` ${label.text}`));
+
+      fieldset.appendChild(labelElement);
+      form.appendChild(fieldset);
     });
-    console.log('Label buttons updated');
+
+    const submitButton = document.createElement('button');
+    submitButton.type = 'button';
+    submitButton.textContent = 'Record';
+    submitButton.addEventListener('click', handleRecord);
+    form.appendChild(submitButton);
+
+    dynamicForm.appendChild(form);
+    console.log('Dynamic form generated');
+  }
+
+  async function handleRecord() {
+    console.log('Recording form state');
+    const form = document.getElementById('schemaForm');
+    const formData = new FormData(form);
+    const data = {};
+
+    for (let [key, value] of formData.entries()) {
+      if (form.querySelector(`input[name="${key}"]`).checked) {
+        data[key] = value;
+      }
+    }
+
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    await browser.tabs.sendMessage(tabs[0].id, { 
+      action: "recordTimestamp", 
+      reactionType: isLuaSchema ? 'lua_form_submission' : 'json_form_submission',
+      formData: data
+    });
+
+    updateTimestampDisplay();
+  }
+
+  function updateTimestampDisplay() {
+    console.log('Updating timestamp display');
+    const columnsContainer = document.getElementById('timestampColumns');
+    columnsContainer.innerHTML = '';
+    
+    const reactionType = isLuaSchema ? 'lua_form_submission' : 'json_form_submission';
+    const columnElement = createTimestampColumn(reactionType, 'Reactions');
+    const timestampsElement = columnElement.querySelector(`#${reactionType}Timestamps`);
+    
+    if (reactions[reactionType] && reactions[reactionType].length > 0) {
+      timestampsElement.innerHTML = reactions[reactionType].map((entry, index) => 
+        `<div class="timestamp-entry">
+           <span>${entry.timestamp}</span>
+           <span>${JSON.stringify(entry.formData)}</span>
+           <span class="remove-btn" data-type="${reactionType}" data-index="${index}">X</span>
+         </div>`
+      ).join('');
+    }
+    console.log('Timestamp display updated');
+  }
+
+  function createTimestampColumn(type, text) {
+    console.log('Creating timestamp column:', type, text);
+    const columnsContainer = document.getElementById('timestampColumns');
+    const columnElement = document.createElement('div');
+    columnElement.id = `${sanitizeId(type)}Column`;
+    columnElement.className = 'column';
+    columnElement.innerHTML = `
+      <h3 id="${sanitizeId(type)}">${text}</h3>
+      <div id="${sanitizeId(type)}Timestamps"></div>
+    `;
+    columnsContainer.appendChild(columnElement);
+    return columnElement;
   }
 
   function clearExistingData() {
     console.log('Clearing existing timestamp data');
     reactions = {};
-    schemaManager.getLabelOptions().forEach(option => {
-      reactions[option.id] = [];
-    });
+    reactions[isLuaSchema ? 'lua_form_submission' : 'json_form_submission'] = [];
     saveState();
     updateTimestampDisplay();
     console.log('Existing timestamp data cleared');
-  }
-
-  async function recordReaction(type) {
-    console.log('Recording reaction:', type);
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-    await browser.tabs.sendMessage(tabs[0].id, { action: "recordTimestamp", reactionType: type });
   }
 
   async function exportTimestamps() {
@@ -169,55 +206,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  function updateTimestampDisplay() {
-    console.log('Updating timestamp display');
-    const labelOptions = schemaManager.getLabelOptions();
-    
-    for (let option of labelOptions) {
-      let type = option.id;
-      let columnElement = document.getElementById(`${type}Column`);
-      if (!columnElement) {
-        columnElement = createTimestampColumn(type, option.text);
-      }
-      let headerElement = columnElement.querySelector('h3');
-      let timestampsElement = document.getElementById(`${type}Timestamps`);
-      
-      if (reactions[type] && reactions[type].length > 0) {
-        headerElement.classList.remove('hidden');
-        timestampsElement.innerHTML = reactions[type].map((t, index) => 
-          `<div class="timestamp-entry">
-             <span>${t}</span>
-             <span class="remove-btn" data-type="${type}" data-index="${index}">X</span>
-           </div>`
-        ).join('');
-      } else {
-        headerElement.classList.add('hidden');
-        timestampsElement.innerHTML = '';
-      }
-    }
-    console.log('Timestamp display updated');
-  }
-
-  function createTimestampColumn(type, text) {
-    console.log('Creating timestamp column:', type, text);
-    const columnsContainer = document.getElementById('timestampColumns');
-    const columnElement = document.createElement('div');
-    columnElement.id = `${type}Column`;
-    columnElement.className = 'column';
-    columnElement.innerHTML = `
-      <h3 id="${type}" class="hidden">${text}</h3>
-      <div id="${type}Timestamps"></div>
-    `;
-    columnsContainer.appendChild(columnElement);
-    return columnElement;
-  }
-
   function saveState() {
     console.log('Saving state');
     let data = {
       [currentTabId]: reactions,
       selectedSchemaText: selectedSchemaText,
-      currentSchema: schemaManager.currentSchema
+      currentSchema: schemaManager.currentSchema,
+      isLuaSchema: isLuaSchema
     };
     browser.storage.local.set(data);
     console.log('State saved');
@@ -227,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('Loading saved state');
     const tabs = await browser.tabs.query({ active: true, currentWindow: true });
     currentTabId = tabs[0].id;
-    const result = await browser.storage.local.get([currentTabId.toString(), 'selectedSchemaText', 'currentSchema']);
+    const result = await browser.storage.local.get([currentTabId.toString(), 'selectedSchemaText', 'currentSchema', 'isLuaSchema']);
     console.log('Loaded state:', result);
     if (result[currentTabId]) {
       reactions = result[currentTabId];
@@ -238,74 +233,16 @@ document.addEventListener('DOMContentLoaded', async function() {
       selectedSchemaText = result.selectedSchemaText;
       schemaTextarea.value = selectedSchemaText;
       await schemaManager.loadSchemaFromString(selectedSchemaText);
-      updateLabelButtons();
+      isLuaSchema = result.isLuaSchema;
+      generateDynamicForm();
     }
     updateTimestampDisplay();
   
     // Send loaded reactions to content script
     await browser.tabs.sendMessage(currentTabId, { action: "updateReactions", reactions: reactions });
   }
-});
 
-
-function parseLuaSchema(luaSchema) {
-  // Regular expressions to match SingleChoice and MultipleChoice
-  const singleChoicePattern = /SingleChoice\('(\w+)',\s*{([^}]+)},\s*([^,]+)(?:,\s*([^)]+))?\)/;
-  const multipleChoicePattern = /MultipleChoice\('(\w+)',\s*{([^}]+)},\s*{([^}]+)}(?:,\s*'([^']+)')?\)/;
-
-  const choices = [];
-  let multiLineBuffer = '';
-  let inMultiLine = false;
-
-  // Split the schema into lines and process each line
-  const lines = luaSchema.split('\n');
-  for (let line of lines) {
-    line = line.trim();
-    
-    if (line.startsWith('--')) {
-      continue; // Skip commented lines
-    }
-
-    if (inMultiLine) {
-      multiLineBuffer += ' ' + line;
-      if (line.includes(')')) {
-        inMultiLine = false;
-        line = multiLineBuffer;
-        multiLineBuffer = '';
-      } else {
-        continue;
-      }
-    } else if (line.includes('MultipleChoice') && !line.includes(')')) {
-      inMultiLine = true;
-      multiLineBuffer = line;
-      continue;
-    }
-
-    const singleMatch = line.match(singleChoicePattern);
-    if (singleMatch) {
-      const [, name, options, crop, condition] = singleMatch;
-      choices.push({
-        type: 'SingleChoice',
-        name,
-        options: options.split(',').map(opt => opt.trim().replace(/"/g, '').replace(/Other/g, '"Other"')),
-        crop: crop.trim(),
-        condition: condition ? condition.trim().replace(/'/g, '') : null
-      });
-      continue;
-    }
-
-    const multipleMatch = line.match(multipleChoicePattern);
-    if (multipleMatch) {
-      const [, name, options, crops, condition] = multipleMatch;
-      choices.push({
-        type: 'MultipleChoice',
-        name,
-        options: options.split(',').map(opt => opt.trim().replace(/"/g, '').replace(/Other/g, '"Other"')),
-        crops: crops.split(',').map(crop => crop.trim()),
-        condition: condition ? condition.trim().replace(/'/g, '') : null
-      });
-    }
+  function sanitizeId(id) {
+    return id.replace(/[^a-z0-9]/gi, '_').toLowerCase();
   }
-
-  return JSON.stringify(choices, null, 2);
-}
+});

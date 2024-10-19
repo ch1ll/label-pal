@@ -1,0 +1,26 @@
+{
+    "manifest_version": 2,
+    "name": "Video Timestamp Recorder",
+    "version": "1.0",
+    "description": "Record timestamps on videos playing in the browser.",
+    "permissions": [
+      "activeTab",
+      "storage",
+      "tabs"
+    ],
+    "browser_action": {
+      "default_title": "Open Timestamp Recorder",
+      "default_icon": "icons/icon.png"
+    },
+    "background": {
+      "scripts": ["background.js"]
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content_script.js"]
+      }
+    ],
+    "web_accessible_resources": ["interface.html"]
+  }
+  

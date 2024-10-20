@@ -1,58 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Timestamp Recorder</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #recordTimestampButton, #addLabelButton, #exportButton {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        #labelsSection {
-            margin-top: 20px;
-        }
-        #labelsList {
-            list-style-type: none;
-            padding: 0;
-        }
-        #labelsList li {
-            padding: 5px 0;
-        }
-        #timestampsList {
-            margin-top: 20px;
-            list-style-type: none;
-            padding: 0;
-        }
-        #timestampsList li {
-            padding: 5px 0;
-        }
-        #addLabelButton {
-            margin-left: 10px;
-        }
-        .removeLabelButton {
-            margin-left: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="interface.css">
 </head>
 <body>
     <h1>Video Timestamp Recorder</h1>
-    <button id="recordTimestampButton">Record Timestamp</button>
+
+    <div id="helpSection">
+        <button id="helpButton">Help</button>
+        <div id="helpContent" class="hidden">
+            <h3>How to use this add-on:</h3>
+            <ol>
+                <li>Enter a project name (optional).</li>
+                <li>Add labels with associated time windows.</li>
+                <li>Select the labels you want to apply.</li>
+                <li>Click "Record Timestamp" to capture the current video time.</li>
+                <li>Review your recorded timestamps.</li>
+                <li>Export your data to JSON or YAML when finished.</li>
+            </ol>
+            <p>Note: Make sure you're on a page with a video playing when using this add-on.</p>
+        </div>
+    </div>
+
+    <div id="projectSection">
+        <h2>Project</h2>
+        <input type="text" id="projectInput" placeholder="Enter project name">
+    </div>
+
     <div id="labelsSection">
         <h2>Labels</h2>
-        <div>
-            <input type="text" id="newLabelInput" placeholder="New label">
-            <button id="addLabelButton">Add Label</button>
-        </div>
+        <input type="text" id="newLabelInput" placeholder="Enter new label">
+        <input type="number" id="newLabelWindow" placeholder="Window (seconds)">
+        <button id="addLabelButton">Add Label</button>
         <ul id="labelsList"></ul>
     </div>
-    <h2>Timestamps</h2>
-    <ul id="timestampsList"></ul>
-    <!-- Add the Export to JSON button -->
-    <button id="exportButton">Export to JSON</button>
+
+    <div id="timestampsSection">
+        <h2>Timestamps</h2>
+        <button id="recordTimestampButton">Record Timestamp</button>
+        <ul id="timestampsList"></ul>
+    </div>
+
+    <div id="exportSection">
+        <button id="exportJSONButton">Export to JSON</button>
+        <button id="exportYAMLButton">Export to YAML</button>
+    </div>
+
     <script src="interface.js"></script>
 </body>
 </html>

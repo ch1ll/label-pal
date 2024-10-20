@@ -1,0 +1,69 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+input, button {
+    margin: 5px 0;
+}
+
+#helpSection {
+    margin-bottom: 20px;
+}
+
+#helpButton {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+#helpContent {
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+#helpContent h3 {
+    margin-top: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+#labelsList, #timestampsList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#labelsList li, #timestampsList li {
+    margin: 5px 0;
+}
+
+.removeLabelButton, .removeTimestampButton {
+    margin-left: 10px;
+    color: red;
+    cursor: pointer;
+}
+
+#exportSection {
+    margin-top: 20px;
+}
+
+#exportJSONButton, #exportYAMLButton {
+    margin-right: 10px;
+}

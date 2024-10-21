@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const settingsToggle = document.getElementById('settingsToggle');
             const settingsSectionContent = document.getElementById('settingsSectionContent');
             const collapsibleSection = document.getElementById('settingsSection');
-        
+
             if (settingsToggle && settingsSectionContent && collapsibleSection) {
                 settingsToggle.addEventListener('click', () => {
                     const isExpanded = settingsToggle.getAttribute('aria-expanded') === 'true';
@@ -46,38 +46,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupCollapsibleSections();
 
         let labels = [];
+        let recordedData = {};
+        let currentVideoUrl = '';
+
+        // Get the noLabelsPrompt element before using it
         const noLabelsPrompt = document.getElementById('noLabelsPrompt');
+
+        // Load data from storage
+        await loadDataFromStorage();
+
+        // Update video URL and ensure recordedData is ready
+        await updateVideoUrl(tabId);
+
+        // Update UI elements
+        updateLabelsList();
+        updateNoLabelsPrompt();
+        updateTimestampsList();
 
         function updateNoLabelsPrompt() {
             if (noLabelsPrompt) {
                 noLabelsPrompt.classList.toggle('hidden', labels.length !== 0);
             }
         }
-
-        updateNoLabelsPrompt();
-
-        let recordedData = {};
-        let currentVideoUrl = '';
-
-        async function updateVideoUrl(tabId) {
-            try {
-                currentVideoUrl = await getVideoUrl(tabId);
-                if (!recordedData[currentVideoUrl]) {
-                    recordedData[currentVideoUrl] = [];
-                }
-                const currentVideoUrlElement = document.getElementById('currentVideoUrl');
-                if (currentVideoUrlElement) {
-                    currentVideoUrlElement.textContent = `Current URL: ${currentVideoUrl}`;
-                    updateTimestampsList();
-                } else {
-                    console.warn("Element with ID 'currentVideoUrl' not found.");
-                }
-            } catch (error) {
-                console.error("Error getting video URL:", error);
-            }
-        }
-
-        await updateVideoUrl(tabId);
 
         browser.tabs.onUpdated.addListener((updatedTabId, changeInfo, tab) => {
             if (updatedTabId === tabId && changeInfo.status === 'complete') {
@@ -185,6 +175,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 newLabelInput.value = '';
                 newLabelWindow.value = '';
                 updateNoLabelsPrompt();
+
+                // Save labels to storage
+                saveLabelsToStorage();
             } else {
                 alert('Please enter a valid label and a positive integer for the window.');
             }
@@ -211,12 +204,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                     listItem.appendChild(labelNode);
 
                     const removeButton = document.createElement('button');
-                    removeButton.textContent = 'Remove';
+                    removeButton.textContent = 'X';
                     removeButton.className = 'removeButton';
                     removeButton.onclick = () => {
                         labels = labels.filter(l => l.text !== label.text);
                         updateLabelsList();
                         updateNoLabelsPrompt();
+
+                        // Save labels to storage
+                        saveLabelsToStorage();
                     };
 
                     listItem.appendChild(removeButton);
@@ -232,6 +228,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dataEntry = { timestamp, labels: selectedLabels };
             recordedData[currentVideoUrl].push(dataEntry);
             updateTimestampsList();
+
+            // Save recorded data to storage
+            saveRecordedDataToStorage();
         }
 
         function updateTimestampsList() {
@@ -251,11 +250,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         listItem.textContent = `${timestampText} - Labels: ${item.labels.map(l => l.text).join(', ')}`;
 
                         const removeButton = document.createElement('button');
-                        removeButton.textContent = 'Remove';
+                        removeButton.textContent = 'X';
                         removeButton.className = 'removeButton';
                         removeButton.onclick = () => {
                             recordedData[currentVideoUrl].splice(index, 1);
                             updateTimestampsList();
+
+                            // Save recorded data to storage
+                            saveRecordedDataToStorage();
                         };
 
                         listItem.appendChild(removeButton);
@@ -398,6 +400,55 @@ document.addEventListener('DOMContentLoaded', async () => {
             } catch (error) {
                 console.error("Unable to get the tab URL", error);
                 return null;
+            }
+        }
+
+        async function updateVideoUrl(tabId) {
+            try {
+                currentVideoUrl = await getVideoUrl(tabId);
+                if (!recordedData[currentVideoUrl]) {
+                    recordedData[currentVideoUrl] = [];
+                }
+                const currentVideoUrlElement = document.getElementById('currentVideoUrl');
+                if (currentVideoUrlElement) {
+                    currentVideoUrlElement.textContent = `Current URL: ${currentVideoUrl}`;
+                    updateTimestampsList();
+                } else {
+                    console.warn("Element with ID 'currentVideoUrl' not found.");
+                }
+            } catch (error) {
+                console.error("Error getting video URL:", error);
+            }
+        }
+
+        // Data persistence functions
+        async function loadDataFromStorage() {
+            try {
+                const storageData = await browser.storage.local.get(['labels', 'recordedData']);
+                if (storageData.labels) {
+                    labels = storageData.labels;
+                }
+                if (storageData.recordedData) {
+                    recordedData = storageData.recordedData;
+                }
+            } catch (error) {
+                console.error("Error loading data from storage:", error);
+            }
+        }
+
+        async function saveLabelsToStorage() {
+            try {
+                await browser.storage.local.set({ labels });
+            } catch (error) {
+                console.error("Error saving labels to storage:", error);
+            }
+        }
+
+        async function saveRecordedDataToStorage() {
+            try {
+                await browser.storage.local.set({ recordedData });
+            } catch (error) {
+                console.error("Error saving recorded data to storage:", error);
             }
         }
     }

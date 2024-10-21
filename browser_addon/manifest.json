@@ -13,11 +13,11 @@
   "sidebar_action": {
     "default_title": "Timestamp Recorder",
     "default_panel": "interface.html",
-    "default_icon": "icons/icon.png"
+    "default_icon": "label-pal-icon-transparent.png"
   },
   "browser_action": {
     "default_title": "Open Timestamp Recorder",
-    "default_icon": "icons/icon.png"
+    "default_icon": "label-pal-icon-transparent.png"
   },
   "background": {
     "scripts": ["background.js"]

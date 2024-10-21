@@ -41,3 +41,20 @@ function setSidebarSize() {
         });
     }
 }
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "openPopup") {
+        browser.windows.create({
+            url: browser.runtime.getURL(`interface.html?tabId=${message.tabId}&mode=popup`),
+            type: "popup",
+            width: 420,
+            height: 900
+        }).then((popupWindow) => {
+            // Send the state to the newly created popup
+            browser.tabs.sendMessage(popupWindow.tabs[0].id, {
+                action: "setState",
+                state: message.state
+            });
+        });
+    }
+});

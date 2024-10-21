@@ -197,7 +197,7 @@ button:hover {
 }
 
 .collapsible-section h2::after {
-    content: '\25BC'; /* Down-pointing triangle */
+    content: '\25B2'; /* Down-pointing triangle */
     font-size: 0.8em;
     display: inline-block; /* Add this line */
     transition: transform 0.3s ease;

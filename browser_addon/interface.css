@@ -8,50 +8,61 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+    margin: 0;
+    padding: 10px;
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 header {
     background-color: var(--primary-color);
     color: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: var(--border-radius);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 h1 {
     margin: 0;
-    font-size: 30px;
+    font-size: 24px;
 }
 
-#helpButton {
+#helpButton, #switchToPopupButton {
     background-color: transparent;
     border: 2px solid white;
     color: white;
     padding: 5px 10px;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-left: 10px;
 }
 
-#helpButton:hover {
+#helpButton:hover, #switchToPopupButton:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+#switchToPopupButton {
+    background-color: var(--secondary-color);
+}
+
+#switchToPopupButton:hover {
+    background-color: #34495e;
+}
+
 #helpContent {
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: 15px;
+    padding: 10px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius);
 }
@@ -63,6 +74,7 @@ h1 {
 h2 {
     margin-top: 0;
     margin-bottom: 2px;
+    font-size: 20px;
 }
 
 section {
@@ -75,10 +87,10 @@ section {
 
 input, button {
     margin: 5px 0;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: var(--border-radius);
-    font-size: 16px;
+    font-size: 14px;
 }
 
 input[type="text"], input[type="number"] {
@@ -116,11 +128,17 @@ button:hover {
     width: 35%;
 }
 
+#labelsList, #timestampsList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
 #labelsList li, #timestampsList li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 8px;
     background-color: #f8f9fa;
     margin-bottom: 5px;
     border-radius: var(--border-radius);
@@ -141,18 +159,34 @@ button:hover {
     background-color: #e74c3c;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 3px 8px;
     border-radius: var(--border-radius);
     cursor: pointer;
     flex-shrink: 0;
+    font-size: 12px;
+}
+
+.removeButton:hover {
+    background-color: #c0392b;
 }
 
 .hidden {
     display: none;
 }
 
-@media (max-width: 400px) {
+#switchPopupWrapper {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Adjust layout for sidebar */
+@media (max-width: 250px) {
     body {
+        padding: 5px;
+    }
+
+    header {
         padding: 10px;
     }
 
@@ -161,11 +195,45 @@ button:hover {
         align-items: flex-start;
     }
 
-    #helpButton {
-        margin-top: 10px;
+    h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    #helpButton, #switchToPopupButton {
+        margin-top: 5px;
+        margin-left: 0;
+        font-size: 12px;
     }
 
     #labelsInputs {
         flex-direction: column;
+    }
+
+    #newLabelInput, #newLabelWindow {
+        width: 100%;
+    }
+
+    section {
+        padding: 8px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    input, button {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    #labelsList li, #timestampsList li {
+        padding: 6px;
+        font-size: 12px;
+    }
+
+    .removeButton {
+        padding: 2px 6px;
+        font-size: 10px;
     }
 }

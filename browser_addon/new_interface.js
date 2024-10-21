@@ -38,10 +38,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const isExpanded = settingsToggle.getAttribute('aria-expanded') === 'true';
                     settingsToggle.setAttribute('aria-expanded', (!isExpanded).toString());
                     settingsSectionContent.classList.toggle('collapsed');
-                    collapsibleSection.classList.toggle('active');
+                    collapsibleSection.classList.toggle('active'); // Ensure this toggles the 'active' class
                 });
             }
         }
+        
 
         setupCollapsibleSections();
 
@@ -62,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         async function updateVideoUrl(tabId) {
             try {
                 currentVideoUrl = await getVideoUrl(tabId);
+                // Initialize recordedData for the new URL
                 if (!recordedData[currentVideoUrl]) {
                     recordedData[currentVideoUrl] = [];
                 }
@@ -107,17 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const addLabelButton = document.getElementById('addLabelButton');
         if (addLabelButton) {
             addLabelButton.addEventListener('click', addLabel);
-        }
-
-        // Add event listeners for export buttons
-        const exportJSONButton = document.getElementById('exportJSONButton');
-        if (exportJSONButton) {
-            exportJSONButton.addEventListener('click', exportDataToJson);
-        }
-
-        const exportYAMLButton = document.getElementById('exportYAMLButton');
-        if (exportYAMLButton) {
-            exportYAMLButton.addEventListener('click', exportDataToYaml);
         }
 
         function toggleHelpContent() {
@@ -201,10 +192,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.value = label.text;
-                    checkbox.id = `label_${label.text}`;
 
                     const labelNode = document.createElement('label');
-                    labelNode.htmlFor = `label_${label.text}`;
                     labelNode.appendChild(checkbox);
                     labelNode.append(` ${label.text} (Window: ${label.window}s)`);
 
@@ -226,10 +215,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         function addTimestampToList(timestamp, selectedLabels) {
+            // Initialize if not already
             if (!recordedData[currentVideoUrl]) {
                 recordedData[currentVideoUrl] = [];
             }
-            const dataEntry = { timestamp, labels: selectedLabels };
+            const dataEntry = { timestamp, labels: selectedLabels.map(l => l.text) };
             recordedData[currentVideoUrl].push(dataEntry);
             updateTimestampsList();
         }
@@ -240,155 +230,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 list.innerHTML = '';
 
                 const entries = recordedData[currentVideoUrl] || [];
-                if (entries.length > 0) {
-                    const urlHeader = document.createElement('a');
-                    urlHeader.href = currentVideoUrl;
-                    urlHeader.textContent = `${currentVideoUrl}`;
-                    list.appendChild(urlHeader);
-                    entries.forEach((item, index) => {
-                        const listItem = document.createElement('li');
-                        const timestampText = formatTime(item.timestamp);
-                        listItem.textContent = `${timestampText} - Labels: ${item.labels.map(l => l.text).join(', ')}`;
+                entries.forEach((item, index) => {
+                    const listItem = document.createElement('li');
 
-                        const removeButton = document.createElement('button');
-                        removeButton.textContent = 'Remove';
-                        removeButton.className = 'removeButton';
-                        removeButton.onclick = () => {
-                            recordedData[currentVideoUrl].splice(index, 1);
-                            updateTimestampsList();
-                        };
+                    const timestampText = document.createTextNode(`${item.timestamp} - Labels: ${item.labels.join(', ')}`);
 
-                        listItem.appendChild(removeButton);
-                        list.appendChild(listItem);
-                    });
-                } else {
-                    const noTimestampsMessage = document.createElement('p');
-                    noTimestampsMessage.textContent = 'No timestamps recorded for this URL yet.';
-                    list.appendChild(noTimestampsMessage);
-                }
-            }
-        }
+                    const removeButton = document.createElement('button');
+                    removeButton.textContent = 'Remove';
+                    removeButton.className = 'removeButton';
+                    removeButton.onclick = () => {
+                        recordedData[currentVideoUrl].splice(index, 1);
+                        updateTimestampsList();
+                    };
 
-        function formatTime(seconds) {
-            const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
-            const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-            const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
-            return `${hrs}:${mins}:${secs}`;
-        }
-
-        function getUrlId(url) {
-            try {
-                const urlObj = new URL(url);
-                let urlId;
-
-                if (urlObj.hostname.includes('youtube.com')) {
-                    urlId = urlObj.searchParams.get('v') || urlObj.pathname.split('/').pop();
-                } else if (urlObj.hostname.includes('twitch.tv')) {
-                    urlId = urlObj.pathname.split('/').pop();
-                } else {
-                    urlId = urlObj.pathname.split('/').pop();
-                }
-
-                return urlId || urlObj.hostname;
-            } catch (error) {
-                console.error("Error parsing URL:", error);
-                return 'unknown';
-            }
-        }
-
-        function sanitizeFilename(name) {
-            return name.replace(/[^a-z0-9]/gi, '_');
-        }
-
-        function exportDataToJson() {
-            if (Object.keys(recordedData).length === 0) {
-                alert('No data to export.');
-                return;
-            }
-
-            const projectName = document.getElementById('projectInput').value.trim() || 'unnamed_project';
-            const fileName = `${sanitizeFilename(projectName)}_timestamps.json`;
-
-            const exportData = {};
-            for (const [url, data] of Object.entries(recordedData)) {
-                exportData[url] = data.map(item => ({
-                    timestamp: item.timestamp,
-                    timestampFormatted: formatTime(item.timestamp),
-                    labels: item.labels.map(l => l.text)
-                }));
-            }
-
-            const jsonString = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function exportDataToYaml() {
-            if (Object.keys(recordedData).length === 0) {
-                alert('No data to export.');
-                return;
-            }
-
-            const projectName = document.getElementById('projectInput').value.trim() || 'unnamed_project';
-            const fileName = `${sanitizeFilename(projectName)}_timestamps.yaml`;
-
-            let yamlContent = `# Project: ${projectName}\n`;
-
-            const labelCounts = {};
-            for (const data of Object.values(recordedData)) {
-                data.forEach(item => {
-                    item.labels.forEach(label => {
-                        if (labelCounts[label.text]) {
-                            labelCounts[label.text]++;
-                        } else {
-                            labelCounts[label.text] = 1;
-                        }
-                    });
+                    listItem.appendChild(timestampText);
+                    listItem.appendChild(removeButton);
+                    list.appendChild(listItem);
                 });
             }
-
-            yamlContent += "# Label counts:\n";
-            for (const [label, count] of Object.entries(labelCounts)) {
-                yamlContent += `#   ${label}: ${count}\n`;
-            }
-
-            yamlContent += "\ncontent:\n";
-            for (const [url, data] of Object.entries(recordedData)) {
-                yamlContent += ` - "${url}":\n`;
-                data.forEach(item => {
-                    const maxWindow = Math.max(...item.labels.map(l => l.window));
-                    const startTime = Math.max(0, item.timestamp - maxWindow);
-                    const endTime = item.timestamp + maxWindow;
-
-                    const startFormatted = formatTime(startTime);
-                    const endFormatted = formatTime(endTime);
-
-                    const labelTexts = item.labels.map(l => l.text).join(' ');
-
-                    yamlContent += `   - "${startFormatted}-${endFormatted}" #${labelTexts}\n`;
-                });
-            }
-
-            const blob = new Blob([yamlContent], { type: 'text/yaml' });
-            const url = URL.createObjectURL(blob);
-
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
         }
 
         async function getVideoUrl(tabId) {

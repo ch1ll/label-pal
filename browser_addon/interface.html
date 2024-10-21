@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Timestamp Recorder</title>
+    <title>LabelPal</title>
     <link rel="stylesheet" href="interface.css">
 </head>
 <body>
     <header>
         <div class="header-content">
             <h1>LabelPal</h1>
-            <button id="helpButton" aria-expanded="false" aria-controls="helpContent">Help</button>
+            <button id="helpButton" aria-expanded="false">Help</button>
         </div>
         <div id="helpContent" class="hidden">
             <h3>How to use this add-on:</h3>
@@ -28,28 +28,39 @@
 
     <main>
 
-        <section id="projectSection">
-            <h2>Project</h2>
-            <input type="text" id="projectInput" placeholder="Enter project name">
+        <section id="settingsSection" class="collapsible-section">
+            <h2 id="settingsToggle" aria-expanded="true">Settings</h2>
+            <div id="settingsSectionContent" class="section-content">
+                <div id="projectSection" class="subsection">
+                    <h3>Project</h3>
+                    <input type="text" id="projectInput" placeholder="Enter project name">
+                </div>
+
+                <div id="addLabelsSection" class="subsection">
+                    <h3>Add New Label</h3>
+                    <div id="labelsInputs">
+                        <input type="text" id="newLabelInput" placeholder="Enter new label">
+                        <input type="number" id="newLabelWindow" placeholder="Window (s)">
+                        <button id="addLabelButton">Add</button>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section id="labelsSection">
+        <section id="labelsSection" class="section">
             <h2>Labels</h2>
-            <div id="labelsInputs">
-                <input type="text" id="newLabelInput" placeholder="Label Name">
-                <input type="number" id="newLabelWindow" placeholder="Window (seconds)" min="1">
-                <button id="addLabelButton">Add</button>
-            </div>
+            <p id="noLabelsPrompt" class="hidden">Open settings to add a label and get started</p>
             <ul id="labelsList"></ul>
         </section>
 
-        <section id="timestampsSection">
+
+        <section id="timestampsSection" class="section">
             <h2>Timestamps</h2>
             <button id="recordTimestampButton">Record Timestamp</button>
             <ul id="timestampsList"></ul>
         </section>
 
-        <section id="exportSection">
+        <section id="exportSection" class="section">
             <h2>Export</h2>
             <button id="exportJSONButton">Export to JSON</button>
             <button id="exportYAMLButton">Export to YAML</button>
@@ -58,7 +69,6 @@
         <div id="switchPopupWrapper">
             <button id="switchToPopupButton">Switch to Pop-up</button>
         </div>
-
     </main>
 
     <script src="interface.js"></script>

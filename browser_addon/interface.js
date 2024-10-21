@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     helpButton.addEventListener('click', () => {
         helpContent.classList.toggle('hidden');
+        helpButton.setAttribute('aria-expanded', helpContent.classList.contains('hidden') ? 'false' : 'true');
     });
 
     // Add event listener to the Record Timestamp button
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remove';
-        removeButton.className = 'removeLabelButton';
+        removeButton.className = 'removeButton';
         removeButton.addEventListener('click', () => {
             removeLabel(labelText, listItem);
         });
@@ -148,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add remove button for the timestamp
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remove';
-        removeButton.className = 'removeTimestampButton';
+        removeButton.className = 'removeButton';
         removeButton.addEventListener('click', () => {
             removeTimestamp(timestamp, listItem);
         });
@@ -314,6 +315,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }).catch(error => {
                 reject(error);
             });
+        });
+    }
+
+    // Function to open the extension in a new window with specified dimensions
+    function openExtensionWindow() {
+        const width = 800;
+        const height = 20;
+        browser.windows.create({
+        url: browser.runtime.getURL("index.html"),
+        type: "popup",
+        width: width,
+        height: height
         });
     }
 });

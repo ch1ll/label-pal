@@ -99,6 +99,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             addLabelButton.addEventListener('click', addLabel);
         }
 
+        const clearAllTimestampsButton = document.getElementById('clearAllTimestampsButton');
+        if (clearAllTimestampsButton) {
+            clearAllTimestampsButton.addEventListener('click', clearAllTimestampsGlobal);
+        }
+
         // Add event listeners for export buttons
         const exportJSONButton = document.getElementById('exportJSONButton');
         if (exportJSONButton) {
@@ -237,35 +242,75 @@ document.addEventListener('DOMContentLoaded', async () => {
             const list = document.getElementById('timestampsList');
             if (list) {
                 list.innerHTML = '';
-
-                const entries = recordedData[currentVideoUrl] || [];
-                if (entries.length > 0) {
-                    const urlHeader = document.createElement('a');
-                    urlHeader.href = currentVideoUrl;
-                    urlHeader.textContent = `${currentVideoUrl}`;
-                    list.appendChild(urlHeader);
-                    entries.forEach((item, index) => {
-                        const listItem = document.createElement('li');
-                        const timestampText = formatTime(item.timestamp);
-                        listItem.textContent = `${timestampText} - Labels: ${item.labels.map(l => l.text).join(', ')}`;
-
-                        const removeButton = document.createElement('button');
-                        removeButton.textContent = 'X';
-                        removeButton.className = 'removeButton';
-                        removeButton.onclick = () => {
-                            recordedData[currentVideoUrl].splice(index, 1);
-                            updateTimestampsList();
-
-                            // Save recorded data to storage
-                            saveRecordedDataToStorage();
-                        };
-
-                        listItem.appendChild(removeButton);
-                        list.appendChild(listItem);
+        
+                // Check if there are any recorded timestamps across all URLs
+                const hasAnyTimestamps = Object.values(recordedData).some(entries => entries.length > 0);
+        
+                if (hasAnyTimestamps) {
+                    // Get all URLs and sort them so current URL appears first
+                    const urls = Object.keys(recordedData).sort((a, b) => {
+                        if (a === currentVideoUrl) return -1;
+                        if (b === currentVideoUrl) return 1;
+                        return 0;
                     });
+        
+                    // Iterate through all URLs in recordedData
+                    for (const url of urls) {
+                        const entries = recordedData[url];
+                        if (entries.length > 0) {
+                            // Create a section for each URL
+                            const urlSection = document.createElement('div');
+                            urlSection.className = 'url-section';
+        
+                            // Create URL header
+                            const urlHeader = document.createElement('div');
+                            urlHeader.className = 'url-header';
+                            
+                            const urlLink = document.createElement('a');
+                            urlLink.href = url;
+                            urlLink.textContent = url;
+                            urlLink.className = 'url-link';
+                            if (url === currentVideoUrl) {
+                                urlLink.className += ' current-url';
+                            }
+                            
+                            urlHeader.appendChild(urlLink);
+                            urlSection.appendChild(urlHeader);
+        
+                            // Create timestamps list for this URL
+                            const timestampsList = document.createElement('ul');
+                            // Reverse the entries array to show newest first
+                            [...entries].reverse().forEach((item, reversedIndex) => {
+                                const listItem = document.createElement('li');
+                                const timestampText = formatTime(item.timestamp);
+                                listItem.textContent = `${timestampText} - Labels: ${item.labels.map(l => l.text).join(', ')}`;
+        
+                                const removeButton = document.createElement('button');
+                                removeButton.textContent = 'X';
+                                removeButton.className = 'removeButton';
+                                removeButton.onclick = () => {
+                                    // Calculate the original index from the reversed index
+                                    const originalIndex = entries.length - 1 - reversedIndex;
+                                    recordedData[url].splice(originalIndex, 1);
+                                    // If this was the last timestamp for this URL, remove the URL entry
+                                    if (recordedData[url].length === 0) {
+                                        delete recordedData[url];
+                                    }
+                                    updateTimestampsList();
+                                    saveRecordedDataToStorage();
+                                };
+        
+                                listItem.appendChild(removeButton);
+                                timestampsList.appendChild(listItem);
+                            });
+        
+                            urlSection.appendChild(timestampsList);
+                            list.appendChild(urlSection);
+                        }
+                    }
                 } else {
                     const noTimestampsMessage = document.createElement('p');
-                    noTimestampsMessage.textContent = 'No timestamps recorded for this URL yet.';
+                    noTimestampsMessage.textContent = 'No timestamps recorded yet.';
                     list.appendChild(noTimestampsMessage);
                 }
             }
@@ -393,10 +438,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             URL.revokeObjectURL(url);
         }
 
+        function clearAllTimestampsGlobal() {
+            const confirmation = confirm('Are you sure you want to clear ALL recorded timestamps for all videos? This action cannot be undone.');
+            if (confirmation) {
+                recordedData = {};
+                updateTimestampsList();
+        
+                // Save the updated recorded data to storage
+                saveRecordedDataToStorage();
+            }
+        }
+
         async function getVideoUrl(tabId) {
             try {
                 const tab = await browser.tabs.get(tabId);
-                return tab.url;
+                const url = new URL(tab.url);
+                // delete timestamp if present in URL
+                url.searchParams.delete('t');
+                return url.toString();
             } catch (error) {
                 console.error("Unable to get the tab URL", error);
                 return null;

@@ -230,6 +230,56 @@ button:hover {
     margin-bottom: 15px;
 }
 
+#clearAllTimestampsButton {
+    margin-top: 10px;
+    color: #e74c3c;
+    background-color: white;
+    border: 1px solid #e74c3c;
+    font-size: 10px;
+    padding: 3px;
+}
+
+#recordTimestampButton {
+    padding: 15px;
+    font-weight: 600;
+    background-color: green;
+}
+
+.url-section {
+    margin-bottom: 1.5em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1em;
+}
+
+.url-section:last-child {
+    border-bottom: none;
+}
+
+.url-header {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+.url-link {
+    word-break: break-all;
+    color: #666;
+    text-decoration: none;
+}
+
+.current-url {
+    color: #0066cc;
+    font-weight: bold;
+}
+
+.url-section ul {
+    margin: 0;
+    padding-left: 1em;
+}
+
+.url-section li {
+    margin: 0.5em 0;
+}
+
 /* Adjust layout for sidebar */
 @media (max-width: 250px) {
     body {

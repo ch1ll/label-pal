@@ -3,6 +3,7 @@
     --secondary-color: #2c3e50;
     --background-color: #ecf0f1;
     --text-color: #34495e;
+    --hover-green: #0bc779;
     --border-radius: 4px;
 }
 
@@ -37,19 +38,39 @@ h1 {
     font-size: 24px;
 }
 
-#helpButton, #switchToPopupButton, #addLabelButton {
-    background-color: transparent;
-    border: 2px solid white;
-    color: white;
-    padding: 5px 10px;
-    font-size: 14px;
+/* Updated styles for the header */
+#headerContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-left: 10px;
 }
 
-#helpButton:hover, #switchToPopupButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+#settingsToggle {
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+#settingsToggle::after {
+    content: '\25B2';
+    font-size: 0.8em;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.collapsible-section.active #settingsToggle::after {
+    transform: rotate(180deg);
+}
+
+#top-logo {
+    height: 30px;
+    width: auto;
+    flex-shrink: 0;
 }
 
 #switchToPopupButton {
@@ -57,7 +78,7 @@ h1 {
 }
 
 #switchToPopupButton:hover {
-    background-color: #34495e;
+    background-color: #5c7fa1;
 }
 
 #helpContent {
@@ -85,7 +106,8 @@ section {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-input, button {
+input,
+button {
     margin: 5px 0;
     padding: 8px;
     border: 1px solid #ddd;
@@ -93,7 +115,8 @@ input, button {
     font-size: 14px;
 }
 
-input[type="text"], input[type="number"] {
+input[type="text"],
+input[type="number"] {
     width: 100%;
     box-sizing: border-box;
 }
@@ -116,7 +139,8 @@ button:hover {
     margin-bottom: 10px;
 }
 
-#newLabelInput, #newLabelWindow {
+#newLabelInput,
+#newLabelWindow {
     flex-grow: 1;
 }
 
@@ -128,13 +152,20 @@ button:hover {
     width: 35%;
 }
 
-#labelsList, #timestampsList {
+#labelsList {
+    max-height: 270px;
+    overflow-y: auto;
+}
+
+#labelsList,
+#timestampsList {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-#labelsList li, #timestampsList li {
+#labelsList li,
+#timestampsList li {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -147,7 +178,6 @@ button:hover {
 #labelsList li label {
     flex-grow: 1;
     text-align: left;
-    margin-left: 10px;
     padding-left: 0px;
 }
 
@@ -187,28 +217,11 @@ button:hover {
     margin-bottom: 15px;
 }
 
-.collapsible-section h2 {
+.collapsible-section h1 {
     margin: 0;
-    padding: 10px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 0;
 }
 
-.collapsible-section h2::after {
-    content: '\25B2'; /* Down-pointing triangle */
-    font-size: 0.8em;
-    display: inline-block; /* Add this line */
-    transition: transform 0.3s ease;
-    margin-left: 5px; /* Optional: Adds space between text and caret */
-}
-
-.collapsible-section.active h2::after {
-    transform: rotate(180deg);
-}
-
-/* Updated to use the 'collapsed' class */
 #settingsSectionContent {
     display: block;
 }
@@ -218,31 +231,30 @@ button:hover {
 }
 
 .subsection {
-    margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 .subsection h3 {
     margin-top: 0;
-    color: var(--text-color);
+    margin-bottom: 1px;
+    color: white;
+    font-size: 18px;
 }
 
 #labelsSection {
     margin-bottom: 15px;
 }
 
-#clearAllTimestampsButton {
-    margin-top: 10px;
-    color: #e74c3c;
-    background-color: white;
-    border: 1px solid #e74c3c;
-    font-size: 10px;
-    padding: 3px;
-}
-
 #recordTimestampButton {
     padding: 15px;
     font-weight: 600;
-    background-color: green;
+    width: 100%;
+    background-color: var(--primary-color);
+    text-align: center;
+}
+
+#recordTimestampButton:hover {
+    background-color: var(--hover-green);
 }
 
 .url-section {
@@ -273,11 +285,110 @@ button:hover {
 
 .url-section ul {
     margin: 0;
-    padding-left: 1em;
+    padding-left: 0em;
 }
 
 .url-section li {
     margin: 0.5em 0;
+}
+
+.otl-button {
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+}
+
+.otl-button:hover {
+    background-color: var(--hover-green);
+}
+
+.danger-button {
+    font-size: 10px;
+    padding: 3px 5px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.danger-button:hover {
+    background-color: #c82333;
+}
+
+#clearAllLabelsButton {
+    border: 1px solid white;
+    padding: 3px 5px;
+    color: white;
+    background-color: transparent;
+    font-size: 10px;
+}
+
+#clearAllLabelsButton:hover {
+    background-color: #dc3545;
+}
+
+.otl-danger-button {
+    margin-top: 10px;
+    color: #e74c3c;
+    background-color: white;
+    border: 1px solid #e74c3c;
+    font-size: 10px;
+    padding: 3px;
+}
+
+.otl-danger-button:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.danger-x {
+    margin-top: 10px;
+    color: #e74c3c;
+    background-color: white;
+    border: 1px solid #e74c3c;
+    font-size: 10px;
+    padding: 3px 6px 3px 6px;
+}
+
+.danger-x:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+#helpContent {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+#helpContent h3 {
+    margin-top: 0;
+}
+
+#helpContent p {
+    margin-bottom: 0;
+}
+
+#closeHelpButton {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+
+#helpButton {
+    float: right;
+    background-color: var(--secondary-color);
+}
+
+#helpButton:hover {
+    background-color: #5c7fa1;
 }
 
 /* Adjust layout for sidebar */
@@ -300,7 +411,7 @@ button:hover {
         margin-bottom: 10px;
     }
 
-    #helpButton, #switchToPopupButton {
+    #switchToPopupButton {
         margin-top: 5px;
         margin-left: 0;
         font-size: 12px;
@@ -310,7 +421,8 @@ button:hover {
         flex-direction: column;
     }
 
-    #newLabelInput, #newLabelWindow {
+    #newLabelInput,
+    #newLabelWindow {
         width: 100%;
     }
 
@@ -322,12 +434,14 @@ button:hover {
         font-size: 18px;
     }
 
-    input, button {
+    input,
+    button {
         font-size: 12px;
         padding: 6px;
     }
 
-    #labelsList li, #timestampsList li {
+    #labelsList li,
+    #timestampsList li {
         padding: 6px;
         font-size: 12px;
     }

@@ -75,10 +75,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
+        /*
         const helpButton = document.getElementById('helpButton');
         if (helpButton) {
             helpButton.addEventListener('click', toggleHelpContent);
         }
+        */
 
         if (mode !== 'popup') {
             setupPopupSwitch(tabId);
@@ -115,6 +117,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             exportYAMLButton.addEventListener('click', exportDataToYaml);
         }
 
+        const clearAllLabelsButton = document.getElementById('clearAllLabelsButton');
+        if (clearAllLabelsButton) {
+            clearAllLabelsButton.addEventListener('click', clearAllLabels);
+        }
+
+        document.getElementById('helpButton').addEventListener('click', function() {
+            const helpContent = document.getElementById('helpContent');
+            if (helpContent) {
+                const isHidden = helpContent.classList.toggle('hidden');
+                helpButton.setAttribute('aria-expanded', (!isHidden).toString());
+            }
+        });
+
+        document.getElementById('closeHelpButton').addEventListener('click', function() {
+            const helpContent = document.getElementById('helpContent');
+            if (helpContent) {
+                const isHidden = helpContent.classList.toggle('hidden');
+                helpButton.setAttribute('aria-expanded', (!isHidden).toString());
+            }
+        });
+
+        /*
         function toggleHelpContent() {
             const helpContent = document.getElementById('helpContent');
             if (helpContent) {
@@ -122,6 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 helpButton.setAttribute('aria-expanded', (!isHidden).toString());
             }
         }
+        */
 
         function setupPopupSwitch(tabId) {
             const button = document.getElementById('switchToPopupButton');
@@ -192,37 +217,54 @@ document.addEventListener('DOMContentLoaded', async () => {
             const labelsList = document.getElementById('labelsList');
             if (labelsList) {
                 labelsList.innerHTML = '';
-
+        
+                if (labels.length === 0) {
+                    const noLabelsMessage = document.createElement('p');
+                    noLabelsMessage.textContent = 'No labels created yet.';
+                    labelsList.appendChild(noLabelsMessage);
+                    return;
+                }
+        
                 labels.forEach(label => {
                     const listItem = document.createElement('li');
-
+        
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.value = label.text;
                     checkbox.id = `label_${label.text}`;
-
+        
                     const labelNode = document.createElement('label');
                     labelNode.htmlFor = `label_${label.text}`;
                     labelNode.appendChild(checkbox);
                     labelNode.append(` ${label.text} (Window: ${label.window}s)`);
-
+        
                     listItem.appendChild(labelNode);
-
+        
                     const removeButton = document.createElement('button');
                     removeButton.textContent = 'X';
-                    removeButton.className = 'removeButton';
+                    removeButton.className = 'danger-x';
                     removeButton.onclick = () => {
                         labels = labels.filter(l => l.text !== label.text);
                         updateLabelsList();
                         updateNoLabelsPrompt();
-
-                        // Save labels to storage
                         saveLabelsToStorage();
                     };
-
+        
                     listItem.appendChild(removeButton);
                     labelsList.appendChild(listItem);
                 });
+            }
+        }        
+
+        function clearAllLabels() {
+            const confirmation = confirm('Are you sure you want to clear ALL labels? This action cannot be undone.');
+            if (confirmation) {
+                labels = [];
+                updateLabelsList();
+                updateNoLabelsPrompt();
+                
+                // Save the updated labels to storage
+                saveLabelsToStorage();
             }
         }
 
@@ -287,7 +329,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
                                 const removeButton = document.createElement('button');
                                 removeButton.textContent = 'X';
-                                removeButton.className = 'removeButton';
+                                removeButton.className = 'danger-x';
                                 removeButton.onclick = () => {
                                     // Calculate the original index from the reversed index
                                     const originalIndex = entries.length - 1 - reversedIndex;

@@ -7,29 +7,12 @@
     <link rel="stylesheet" href="interface.css">
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <h1>LabelPal</h1>
-            <button id="helpButton" aria-expanded="false">Help</button>
-        </div>
-        <div id="helpContent" class="hidden">
-            <h3>How to use this add-on:</h3>
-            <ol>
-                <li>Enter a project name (optional).</li>
-                <li>Add labels with associated time windows.</li>
-                <li>Select the labels you want to apply.</li>
-                <li>Click "Record Timestamp" to capture the current video time.</li>
-                <li>Review your recorded timestamps.</li>
-                <li>Export your data to JSON or YAML when finished.</li>
-            </ol>
-            <p>Note: Make sure you're on a page with a video playing when using this add-on.</p>
-        </div>
-    </header>
-
     <main>
-
         <section id="settingsSection" class="collapsible-section">
-            <h2 id="settingsToggle" aria-expanded="true">Settings</h2>
+            <div id="headerContainer">
+                <img id="top-logo" src='label-pal-icon-transparent.png'>
+                <h1 id="settingsToggle" aria-expanded="true">LabelPal</h1>
+            </div>
             <div id="settingsSectionContent" class="section-content">
                 <div id="projectSection" class="subsection">
                     <h3>Project</h3>
@@ -41,16 +24,17 @@
                     <div id="labelsInputs">
                         <input type="text" id="newLabelInput" placeholder="Enter new label">
                         <input type="number" id="newLabelWindow" placeholder="Window (s)">
-                        <button id="addLabelButton">Add</button>
+                        <button id="addLabelButton" class="otl-button">Add</button>
                     </div>
+                    <button id="clearAllLabelsButton">Clear All Labels</button>
+                </div>
+
+                <div class="subsection">
+                    <h3>Export</h3>
+                    <button id="exportJSONButton" class="otl-button">Export to JSON</button>
+                    <button id="exportYAMLButton" class = "otl-button">Export to YAML</button>
                 </div>
             </div>
-        </section>
-
-        <section id="exportSection" class="section">
-            <h2>Export</h2>
-            <button id="exportJSONButton">Export to JSON</button>
-            <button id="exportYAMLButton">Export to YAML</button>
         </section>
 
         <section id="labelsSection" class="section">
@@ -64,14 +48,27 @@
             <h2>Timestamps</h2>
             <button id="recordTimestampButton">Record Timestamp</button>
             <ul id="timestampsList"></ul>
-            <button id="clearAllTimestampsButton">Clear All Timestamps</button>
+            <button id="clearAllTimestampsButton" class="otl-danger-button">Clear All Timestamps</button>
         </section>
 
         <div id="switchPopupWrapper">
+            <div id="helpContent" class="hidden">
+                <h3>How to use this add-on:</h3>
+                <button id="closeHelpButton" class="danger-x">X</button>
+                <ol>
+                    <li>Enter a project name (optional).</li>
+                    <li>Add labels with associated time windows.</li>
+                    <li>Select the labels you want to apply.</li>
+                    <li>Click "Record Timestamp" to capture the current video time.</li>
+                    <li>Review your recorded timestamps.</li>
+                    <li>Export your data to JSON or YAML when finished.</li>
+                </ol>
+                <p>Note: Make sure you're on a page with a video playing when using this add-on.</p>
+            </div>
             <button id="switchToPopupButton">Switch to Pop-up</button>
+            <button id="helpButton" aria-expanded="false">Help</button>
         </div>
     </main>
-
     <script src="interface.js"></script>
 </body>
 </html>

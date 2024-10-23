@@ -1,54 +1,48 @@
-function openWindow() {
-  const createData = {
-    type: 'popup',
-    url: 'draggable-window.html',
-    width: 350,
-    height: 500
-  };
-  
-  if (typeof browser !== 'undefined' && browser.windows) {
-    browser.windows.create(createData);
-  } else if (typeof chrome !== 'undefined' && chrome.windows) {
-    chrome.windows.create(createData);
-  }
-}
+let sidebarOpen = false;
 
-function addBrowserActionListener() {
-  if (typeof browser !== 'undefined' && browser.browserAction) {
-    browser.browserAction.onClicked.addListener(openWindow);
-  } else if (typeof chrome !== 'undefined' && chrome.action) {
-    chrome.action.onClicked.addListener(openWindow);
-  }
-}
-
-addBrowserActionListener();
-
-function handleMessage(request, sender, sendResponse) {
-  if (request.action === "recordTimestamp") {
-    if (typeof browser !== 'undefined' && browser.tabs) {
-      browser.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        if (tabs[0]) {
-          browser.tabs.sendMessage(tabs[0].id, request);
-        }
-      });
-    } else if (typeof chrome !== 'undefined' && chrome.tabs) {
-      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        if (tabs[0]) {
-          chrome.tabs.sendMessage(tabs[0].id, request);
-        }
-      });
+browser.browserAction.onClicked.addListener((tab) => {
+    if (sidebarOpen) {
+        browser.sidebarAction.close();
+        sidebarOpen = false;
+    } else {
+        browser.sidebarAction.open();
+        sidebarOpen = true;
+        setSidebarSize();
     }
-  } else if (request.action === "updateTimestamps") {
-    if (typeof browser !== 'undefined' && browser.runtime) {
-      browser.runtime.sendMessage(request);
-    } else if (typeof chrome !== 'undefined' && chrome.runtime) {
-      chrome.runtime.sendMessage(request);
-    }
-  }
-}
+});
 
-if (typeof browser !== 'undefined' && browser.runtime) {
-  browser.runtime.onMessage.addListener(handleMessage);
-} else if (typeof chrome !== 'undefined' && chrome.runtime) {
-  chrome.runtime.onMessage.addListener(handleMessage);
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "openPopup") {
+        browser.windows.create({
+            url: browser.runtime.getURL(`interface.html?tabId=${message.tabId}&mode=popup`),
+            type: "popup",
+            width: 420,
+            height: 900
+        }).then((popupWindow) => {
+            // Send the state to the newly created popup
+            browser.tabs.sendMessage(popupWindow.tabs[0].id, {
+                action: "setState",
+                state: message.state
+            });
+        });
+    } else if (message.action === "sidebarLoaded") {
+        setSidebarSize();
+    }
+});
+
+function setSidebarSize() {
+    const desiredWidth = 350;
+    
+    if (browser.sidebarAction && browser.sidebarAction.setWidth) {
+        // Currently this doesn't work with Firefox
+        browser.sidebarAction.setWidth({width: desiredWidth});
+    } else if (browser.windows && browser.windows.getCurrent) {
+        // Chrome and other browsers
+        browser.windows.getCurrent({populate: true}).then((window) => {
+            const sidebar = window.tabs.find(tab => tab.url.includes(browser.runtime.getURL("interface.html")));
+            if (sidebar) {
+                browser.windows.update(sidebar.windowId, {width: desiredWidth});
+            }
+        });
+    }
 }

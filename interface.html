@@ -31,7 +31,7 @@
 
                 <div class="subsection">
                     <h3>Export</h3>
-                    <button id="exportJSONButton" class="otl-button">Export to JSON</button>
+                    <button id="exportJSONButton" class="otl-button mr-10">Export to JSON</button>
                     <button id="exportYAMLButton" class = "otl-button">Export to YAML</button>
                 </div>
             </div>
@@ -62,8 +62,14 @@
                     <li>Click "Record Timestamp" to capture the current video time.</li>
                     <li>Review your recorded timestamps.</li>
                     <li>Export your data to JSON or YAML when finished.</li>
-                </ol>
-                <p>Note: Make sure you're on a page with a video playing when using this add-on.</p>
+                        <p>When exporting to YAML we supply a start and end timestamp -/+ time window seconds.</p>
+                        <p>When exporting to JSON just supply the explicit timestamp.</p>
+                    <li>To return to sidebar from pop-up, simply close the window and re-open the add on</li>
+                    </ol>
+                <hr>
+                <p>If you are playing a video and get:
+                    <div><i>"Error: Unable to get current video time. Make sure you're on a page with a video playing."</i></div>
+                <p>Close and re-open the add on. This might happen after initially loading the temporary extension in <i>about:debugging#/runtime/this-firefox</i></p>
             </div>
             <button id="switchToPopupButton">Switch to Pop-up</button>
             <button id="helpButton" aria-expanded="false">Help</button>

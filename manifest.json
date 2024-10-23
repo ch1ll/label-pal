@@ -1,28 +1,33 @@
 {
   "manifest_version": 2,
-  "name": "Timestamp Recorder",
+  "name": "Video Timestamp Recorder",
   "version": "1.0",
-  "description": "Record timestamps with custom schemas",
+  "description": "Record timestamps on videos playing in the browser.",
   "permissions": [
     "activeTab",
     "storage",
-    "tabs"
+    "tabs",
+    "menus",
+    "<all_urls>"
   ],
-  "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+  "sidebar_action": {
+    "default_title": "Timestamp Recorder",
+    "default_panel": "interface.html",
+    "default_icon": "label-pal-icon-transparent.png"
   },
   "browser_action": {
-    "default_icon": "label-pal-icon.png",
-    "default_title": "Timestamp Recorder"
+    "default_title": "Open Timestamp Recorder",
+    "default_icon": "label-pal-icon-transparent.png"
+  },
+  "background": {
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content_script.js"],
+      "run_at": "document_idle"
     }
   ],
-  "web_accessible_resources": [
-    "draggable-window.html"
-  ]
+  "web_accessible_resources": ["interface.html"]
 }

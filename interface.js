@@ -24,9 +24,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     await initializeExtension(tabId);
 
     async function initializeExtension(tabId) {
-        if (mode !== 'popup') {
-            browser.runtime.sendMessage({ action: "sidebarLoaded" });
-        }
+        // Commented out to prevent duplicate popup windows
+        // if (mode !== 'popup') {
+        //     browser.runtime.sendMessage({ action: "sidebarLoaded" });
+        // }
 
         function setupCollapsibleSections() {
             const settingsToggle = document.getElementById('settingsToggle');
@@ -75,13 +76,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        /*
-        const helpButton = document.getElementById('helpButton');
-        if (helpButton) {
-            helpButton.addEventListener('click', toggleHelpContent);
-        }
-        */
-
         if (mode !== 'popup') {
             setupPopupSwitch(tabId);
         } else {
@@ -122,31 +116,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             clearAllLabelsButton.addEventListener('click', clearAllLabels);
         }
 
-        document.getElementById('helpButton').addEventListener('click', function() {
-            const helpContent = document.getElementById('helpContent');
-            if (helpContent) {
-                const isHidden = helpContent.classList.toggle('hidden');
-                helpButton.setAttribute('aria-expanded', (!isHidden).toString());
-            }
-        });
-
-        document.getElementById('closeHelpButton').addEventListener('click', function() {
-            const helpContent = document.getElementById('helpContent');
-            if (helpContent) {
-                const isHidden = helpContent.classList.toggle('hidden');
-                helpButton.setAttribute('aria-expanded', (!isHidden).toString());
-            }
-        });
-
-        /*
-        function toggleHelpContent() {
-            const helpContent = document.getElementById('helpContent');
-            if (helpContent) {
-                const isHidden = helpContent.classList.toggle('hidden');
-                helpButton.setAttribute('aria-expanded', (!isHidden).toString());
-            }
+        const helpButton = document.getElementById('helpButton');
+        if (helpButton) {
+            helpButton.addEventListener('click', function() {
+                const helpContent = document.getElementById('helpContent');
+                if (helpContent) {
+                    const isHidden = helpContent.classList.toggle('hidden');
+                    helpButton.setAttribute('aria-expanded', (!isHidden).toString());
+                }
+            });
         }
-        */
+
+        const closeHelpButton = document.getElementById('closeHelpButton');
+        if (closeHelpButton) {
+            closeHelpButton.addEventListener('click', function() {
+                const helpContent = document.getElementById('helpContent');
+                if (helpContent) {
+                    const isHidden = helpContent.classList.toggle('hidden');
+                    helpButton.setAttribute('aria-expanded', (!isHidden).toString());
+                }
+            });
+        }
 
         function setupPopupSwitch(tabId) {
             const button = document.getElementById('switchToPopupButton');
@@ -217,29 +207,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             const labelsList = document.getElementById('labelsList');
             if (labelsList) {
                 labelsList.innerHTML = '';
-        
+            
                 if (labels.length === 0) {
                     const noLabelsMessage = document.createElement('p');
                     noLabelsMessage.textContent = 'No labels created yet.';
                     labelsList.appendChild(noLabelsMessage);
                     return;
                 }
-        
+            
                 labels.forEach(label => {
                     const listItem = document.createElement('li');
-        
+            
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.value = label.text;
                     checkbox.id = `label_${label.text}`;
-        
+            
                     const labelNode = document.createElement('label');
                     labelNode.htmlFor = `label_${label.text}`;
                     labelNode.appendChild(checkbox);
                     labelNode.append(` ${label.text} (Window: ${label.window}s)`);
-        
+            
                     listItem.appendChild(labelNode);
-        
+            
                     const removeButton = document.createElement('button');
                     removeButton.textContent = 'X';
                     removeButton.className = 'danger-x';
@@ -249,7 +239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         updateNoLabelsPrompt();
                         saveLabelsToStorage();
                     };
-        
+            
                     listItem.appendChild(removeButton);
                     labelsList.appendChild(listItem);
                 });
@@ -284,10 +274,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const list = document.getElementById('timestampsList');
             if (list) {
                 list.innerHTML = '';
-        
+            
                 // Check if there are any recorded timestamps across all URLs
                 const hasAnyTimestamps = Object.values(recordedData).some(entries => entries.length > 0);
-        
+            
                 if (hasAnyTimestamps) {
                     // Get all URLs and sort them so current URL appears first
                     const urls = Object.keys(recordedData).sort((a, b) => {
@@ -295,7 +285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (b === currentVideoUrl) return 1;
                         return 0;
                     });
-        
+            
                     // Iterate through all URLs in recordedData
                     for (const url of urls) {
                         const entries = recordedData[url];
@@ -303,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             // Create a section for each URL
                             const urlSection = document.createElement('div');
                             urlSection.className = 'url-section';
-        
+            
                             // Create URL header
                             const urlHeader = document.createElement('div');
                             urlHeader.className = 'url-header';
@@ -318,7 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             
                             urlHeader.appendChild(urlLink);
                             urlSection.appendChild(urlHeader);
-        
+            
                             // Create timestamps list for this URL
                             const timestampsList = document.createElement('ul');
                             // Reverse the entries array to show newest first
@@ -326,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 const listItem = document.createElement('li');
                                 const timestampText = formatTime(item.timestamp);
                                 listItem.textContent = `${timestampText} - Labels: ${item.labels.map(l => l.text).join(', ')}`;
-        
+            
                                 const removeButton = document.createElement('button');
                                 removeButton.textContent = 'X';
                                 removeButton.className = 'danger-x';
@@ -341,11 +331,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     updateTimestampsList();
                                     saveRecordedDataToStorage();
                                 };
-        
+            
                                 listItem.appendChild(removeButton);
                                 timestampsList.appendChild(listItem);
                             });
-        
+            
                             urlSection.appendChild(timestampsList);
                             list.appendChild(urlSection);
                         }
@@ -485,7 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (confirmation) {
                 recordedData = {};
                 updateTimestampsList();
-        
+            
                 // Save the updated recorded data to storage
                 saveRecordedDataToStorage();
             }

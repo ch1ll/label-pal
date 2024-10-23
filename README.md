@@ -1,32 +1,130 @@
-# How to Load a Temporary Add-on in Firefox
+# LabelPal
 
-Follow these steps to load a temporary add-on in Firefox:
+LabelPal is a browser extension that allows users to create timestamped labels for videos, making it easy to mark and organize important moments during video playback.
 
-1. Open Firefox browser.
+## Features
 
-2. In the URL bar, enter the following: `about:debugging#/runtime/this-firefox`
+- Create custom labels with configurable time windows
+- Record timestamps with multiple labels simultaneously
+- Export data in both JSON and YAML formats
+- Support for multiple video URLs
+- Sidebar and popup interface modes
+- Persistent storage of labels and timestamps
+- Real-time video time capture
 
-3. Press Enter to navigate to the debugging page.
+## Installation
 
-4. On the left sidebar, ensure "This Firefox" is selected.
+Currently, the extension supports Firefox. To install it for development:
 
-5. In the main content area, locate the "Temporary Extensions" section.
+1. Open Firefox and navigate to `about:debugging#/runtime/this-firefox`
+2. Click "Load Temporary Add-on"
+3. Select any file from the extension's directory
 
-6. Click the "Load Temporary Add-on" button.
+## Usage
 
-7. In the file browser that opens, navigate to the unzipped directory of your add-on.
+### Basic Setup
 
-8. Select any file within that directory, typically `manifest.json`.
+1. Click the LabelPal icon to open the extension (I recommend pinning to toolbar for ease of access.)
+2. Enter an optional project name
+3. Add labels with associated time windows
+   - Each label requires a name and a time window (in seconds)
+   - The time window defines how much time before and after the timestamp should be included
 
-9. Click "Open" to load the add-on.
+### Recording Timestamps
 
-## Tips
+1. Select one or more labels you want to apply
+2. Click "Record Timestamp" while the video is playing
+3. The current video time will be recorded with your selected labels
 
-- For easier access to your newly loaded add-on, consider pinning it to the Firefox toolbar:
-1. Click the menu button (☰) in the top-right corner of Firefox.
-2. Find your add-on in the list.
-3. Click the "Pin to Toolbar" option next to it.
+### Managing Data
 
-- Remember that temporary add-ons will be removed when you close Firefox. You'll need to load them again the next time you start the browser.
+- **Labels**: 
+  - Add new labels with custom time windows
+  - Remove individual labels
+  - Clear all labels at once
+  
+- **Timestamps**:
+  - View recorded timestamps organized by URL
+  - Remove individual timestamps
+  - Clear all timestamps at once
 
-- This method is particularly useful for testing and developing add-ons before publishing them to the Firefox Add-ons store.
+### Exporting Data
+
+#### JSON Export
+Exports data in the following format:
+```json
+{
+  "https://video-url.com": [
+    {
+      "timestamp": 123.45,
+      "timestampFormatted": "00:02:03",
+      "labels": ["Label1", "Label2"]
+    }
+  ]
+}
+```
+
+#### YAML Export
+Exports data with time windows in the following format:
+```yaml
+# Project: project_name
+# Label counts:
+#   Label1: 5
+#   Label2: 3
+
+content:
+ - "https://video-url.com":
+   - "00:01:53-00:02:13" #Label1 Label2
+```
+
+## Interface Modes
+
+### Sidebar Mode
+- Opens as a sidebar in the browser
+- Persistent view while navigating
+- Toggle between expanded and collapsed states
+
+### Popup Mode
+- Opens in a separate window
+- Useful for dual-monitor setups
+- Can be switched to from sidebar mode
+- To return to sidebar mode, simply close the pop-up window and click the add on icon.
+
+## Technical Details
+
+### Files Structure
+- `background.js`: Handles extension initialization and window management
+- `content_script.js`: Interacts with video elements on the page
+- `interface.html`: Main UI structure
+- `interface.css`: Styling for the extension
+- `interface.js`: Core functionality and user interactions
+
+### Storage
+- Uses browser.storage.local for persistent data storage
+- Stores labels and timestamps separately
+- Data persists across browser sessions
+
+## Known Limitations
+
+- Currently supports Firefox only
+- May require re-opening the extension if video time capture fails
+- Time windows are symmetrical (same duration before and after timestamp)
+
+## Troubleshooting
+
+If you encounter the error "Unable to get current video time":
+1. Close the extension
+2. Reload the page with the video
+3. Re-open the extension
+
+## Development
+
+### Building from Source
+
+1. Clone the repository
+2. Ensure all required files are present
+3. Load as a temporary add-on in Firefox for testing
+
+### Contributing
+
+Contributions are welcome! Please ensure your code follows the existing style and includes appropriate documentation.

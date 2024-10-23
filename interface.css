@@ -1,0 +1,464 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --background-color: #ecf0f1;
+    --text-color: #34495e;
+    --hover-green: #0bc779;
+    --border-radius: 4px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 10px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+header {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Updated styles for the header */
+#headerContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#settingsToggle {
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+#settingsToggle::after {
+    content: '\25B2';
+    font-size: 0.8em;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.collapsible-section.active #settingsToggle::after {
+    transform: rotate(180deg);
+}
+
+#top-logo {
+    height: 30px;
+    width: auto;
+    flex-shrink: 0;
+}
+
+#switchToPopupButton {
+    background-color: var(--secondary-color);
+}
+
+#switchToPopupButton:hover {
+    background-color: #5c7fa1;
+}
+
+#helpContent {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+}
+
+#helpContent h3 {
+    margin-top: 0;
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 2px;
+    font-size: 20px;
+}
+
+section {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+input,
+button {
+    margin: 5px 0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+#labelsInputs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#newLabelInput,
+#newLabelWindow {
+    flex-grow: 1;
+}
+
+#newLabelInput {
+    width: 65%;
+}
+
+#newLabelWindow {
+    width: 35%;
+}
+
+#labelsList {
+    max-height: 270px;
+    overflow-y: auto;
+}
+
+#labelsList,
+#timestampsList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#labelsList li,
+#timestampsList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: #f8f9fa;
+    margin-bottom: 5px;
+    border-radius: var(--border-radius);
+}
+
+#labelsList li label {
+    flex-grow: 1;
+    text-align: left;
+    padding-left: 0px;
+}
+
+#labelsList li input[type="checkbox"] {
+    flex-shrink: 0;
+}
+
+.removeButton {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+.removeButton:hover {
+    background-color: #c0392b;
+}
+
+.hidden {
+    display: none;
+}
+
+#switchPopupWrapper {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+}
+
+.collapsible-section {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+}
+
+.collapsible-section h1 {
+    margin: 0;
+    padding: 0;
+}
+
+#settingsSectionContent {
+    display: block;
+}
+
+#settingsSectionContent.collapsed {
+    display: none;
+}
+
+.subsection {
+    margin-top: 15px;
+}
+
+.subsection h3 {
+    margin-top: 0;
+    margin-bottom: 1px;
+    color: white;
+    font-size: 18px;
+}
+
+#labelsSection {
+    margin-bottom: 15px;
+}
+
+#recordTimestampButton {
+    padding: 15px;
+    font-weight: 600;
+    width: 100%;
+    background-color: var(--primary-color);
+    text-align: center;
+}
+
+#recordTimestampButton:hover {
+    background-color: var(--hover-green);
+}
+
+.url-section {
+    margin-bottom: 1.5em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1em;
+}
+
+.url-section:last-child {
+    border-bottom: none;
+}
+
+.url-header {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+.url-link {
+    word-break: break-all;
+    color: #666;
+    text-decoration: none;
+}
+
+.current-url {
+    color: #0066cc;
+    font-weight: bold;
+}
+
+.url-section ul {
+    margin: 0;
+    padding-left: 0em;
+}
+
+.url-section li {
+    margin: 0.5em 0;
+}
+
+.otl-button {
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.otl-button:hover {
+    background-color: var(--hover-green);
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+.danger-button {
+    font-size: 10px;
+    padding: 3px 5px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.danger-button:hover {
+    background-color: #c82333;
+}
+
+#clearAllLabelsButton {
+    border: 1px solid white;
+    padding: 3px 5px;
+    color: white;
+    background-color: transparent;
+    font-size: 10px;
+}
+
+#clearAllLabelsButton:hover {
+    background-color: #dc3545;
+}
+
+.otl-danger-button {
+    margin-top: 10px;
+    color: #e74c3c;
+    background-color: white;
+    border: 1px solid #e74c3c;
+    font-size: 10px;
+    padding: 3px;
+}
+
+.otl-danger-button:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.danger-x {
+    margin-top: 10px;
+    color: #e74c3c;
+    background-color: white;
+    border: 1px solid #e74c3c;
+    font-size: 10px;
+    padding: 3px 6px 3px 6px;
+}
+
+.danger-x:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+#helpContent {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+#helpContent h3 {
+    margin-top: 0;
+}
+
+#helpContent p {
+    margin-bottom: 0;
+}
+
+#closeHelpButton {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+
+#helpButton {
+    float: right;
+    background-color: var(--secondary-color);
+}
+
+#helpButton:hover {
+    background-color: #5c7fa1;
+}
+
+#returnToSidebarButton {
+    background-color: var(--secondary-color);
+}
+
+#returnToSidebarButton:hover {
+    background-color: #5c7fa1;
+}
+
+/* Adjust layout for sidebar */
+@media (max-width: 250px) {
+    body {
+        padding: 5px;
+    }
+
+    header {
+        padding: 10px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    #switchToPopupButton {
+        margin-top: 5px;
+        margin-left: 0;
+        font-size: 12px;
+    }
+
+    #labelsInputs {
+        flex-direction: column;
+    }
+
+    #newLabelInput,
+    #newLabelWindow {
+        width: 100%;
+    }
+
+    section {
+        padding: 8px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    input,
+    button {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    #labelsList li,
+    #timestampsList li {
+        padding: 6px;
+        font-size: 12px;
+    }
+
+    .removeButton {
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabelPal</title>
+    <link rel="stylesheet" href="interface.css">
+</head>
+<body>
+    <main>
+        <section id="settingsSection" class="collapsible-section">
+            <div id="headerContainer">
+                <img id="top-logo" src='label-pal-icon-transparent.png'>
+                <h1 id="settingsToggle" aria-expanded="true">LabelPal</h1>
+            </div>
+            <div id="settingsSectionContent" class="section-content">
+                <div id="projectSection" class="subsection">
+                    <h3>Project</h3>
+                    <input type="text" id="projectInput" placeholder="Enter project name">
+                </div>
+
+                <div id="addLabelsSection" class="subsection">
+                    <h3>Add New Label</h3>
+                    <div id="labelsInputs">
+                        <input type="text" id="newLabelInput" placeholder="Enter new label">
+                        <input type="number" id="newLabelWindow" placeholder="Window (s)">
+                        <button id="addLabelButton" class="otl-button">Add</button>
+                    </div>
+                    <button id="clearAllLabelsButton">Clear All Labels</button>
+                </div>
+
+                <div class="subsection">
+                    <h3>Export</h3>
+                    <button id="exportJSONButton" class="otl-button mr-10">Export to JSON</button>
+                    <button id="exportYAMLButton" class = "otl-button">Export to YAML</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="labelsSection" class="section">
+            <h2>Labels</h2>
+            <p id="noLabelsPrompt" class="hidden">Open settings to add a label and get started</p>
+            <ul id="labelsList"></ul>
+        </section>
+
+
+        <section id="timestampsSection" class="section">
+            <h2>Timestamps</h2>
+            <button id="recordTimestampButton">Record Timestamp</button>
+            <ul id="timestampsList"></ul>
+            <button id="clearAllTimestampsButton" class="otl-danger-button">Clear All Timestamps</button>
+        </section>
+
+        <div id="switchPopupWrapper">
+            <div id="helpContent" class="hidden">
+                <h3>How to use this add-on:</h3>
+                <button id="closeHelpButton" class="danger-x">X</button>
+                <ol>
+                    <li>Enter a project name (optional).</li>
+                    <li>Add labels with associated time windows.</li>
+                    <li>Select the labels you want to apply.</li>
+                    <li>Click "Record Timestamp" to capture the current video time.</li>
+                    <li>Review your recorded timestamps.</li>
+                    <li>Export your data to JSON or YAML when finished.</li>
+                        <p>When exporting to YAML we supply a start and end timestamp -/+ time window seconds.</p>
+                        <p>When exporting to JSON just supply the explicit timestamp.</p>
+                    <li>To return to sidebar from pop-up, simply close the window and re-open the add on</li>
+                    </ol>
+                <hr>
+                <p>If you are playing a video and get:
+                    <div><i>"Error: Unable to get current video time. Make sure you're on a page with a video playing."</i></div>
+                <p>Close and re-open the add on. This might happen after initially loading the temporary extension in <i>about:debugging#/runtime/this-firefox</i></p>
+            </div>
+            <button id="switchToPopupButton">Switch to Pop-up</button>
+            <button id="helpButton" aria-expanded="false">Help</button>
+        </div>
+    </main>
+    <script src="interface.js"></script>
+</body>
+</html>

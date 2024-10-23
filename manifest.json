@@ -1,21 +1,33 @@
-// manifest.json
 {
   "manifest_version": 2,
   "name": "Video Timestamp Recorder",
   "version": "1.0",
-  "description": "Records 'laugh' and 'scream' timestamps in videos playing in the browser window",
-  "permissions": ["activeTab", "downloads", "tabs", "storage"],
-  "browser_action": {
-    "default_icon": "label-pal-icon.png",
-    "default_popup": "popup.html"
+  "description": "Record timestamps on videos playing in the browser.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "menus",
+    "<all_urls>"
+  ],
+  "sidebar_action": {
+    "default_title": "Timestamp Recorder",
+    "default_panel": "interface.html",
+    "default_icon": "label-pal-icon-transparent.png"
   },
-  "icons": {
-    "48": "label-pal-icon.png"
+  "browser_action": {
+    "default_title": "Open Timestamp Recorder",
+    "default_icon": "label-pal-icon-transparent.png"
+  },
+  "background": {
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content_script.js"],
+      "run_at": "document_idle"
     }
-  ]
+  ],
+  "web_accessible_resources": ["interface.html"]
 }

@@ -384,88 +384,94 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alert('No data to export.');
                 return;
             }
-
+        
             const projectName = document.getElementById('projectInput').value.trim() || 'unnamed_project';
             const fileName = `${sanitizeFilename(projectName)}_timestamps.json`;
-
+        
             const exportData = {};
             for (const [url, data] of Object.entries(recordedData)) {
-                exportData[url] = data.map(item => ({
-                    timestamp: item.timestamp,
-                    timestampFormatted: formatTime(item.timestamp),
-                    labels: item.labels.map(l => l.text)
-                }));
+                if (data && data.length > 0) {  // Only include URLs with timestamps
+                    exportData[url] = data.map(item => ({
+                        timestamp: item.timestamp,
+                        timestampFormatted: formatTime(item.timestamp),
+                        labels: item.labels.map(l => l.text)
+                    }));
+                }
             }
-
+        
             const jsonString = JSON.stringify(exportData, null, 2);
             const blob = new Blob([jsonString], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-
+        
             const a = document.createElement('a');
             a.href = url;
             a.download = fileName;
             document.body.appendChild(a);
             a.click();
-
+        
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
-
+        
         function exportDataToYaml() {
             if (Object.keys(recordedData).length === 0) {
                 alert('No data to export.');
                 return;
             }
-
+        
             const projectName = document.getElementById('projectInput').value.trim() || 'unnamed_project';
             const fileName = `${sanitizeFilename(projectName)}_timestamps.yaml`;
-
+        
             let yamlContent = `# Project: ${projectName}\n`;
-
+        
             const labelCounts = {};
             for (const data of Object.values(recordedData)) {
-                data.forEach(item => {
-                    item.labels.forEach(label => {
-                        if (labelCounts[label.text]) {
-                            labelCounts[label.text]++;
-                        } else {
-                            labelCounts[label.text] = 1;
-                        }
+                if (data && data.length > 0) {  // Only count labels from URLs with timestamps
+                    data.forEach(item => {
+                        item.labels.forEach(label => {
+                            if (labelCounts[label.text]) {
+                                labelCounts[label.text]++;
+                            } else {
+                                labelCounts[label.text] = 1;
+                            }
+                        });
                     });
-                });
+                }
             }
-
+        
             yamlContent += "# Label counts:\n";
             for (const [label, count] of Object.entries(labelCounts)) {
                 yamlContent += `#   ${label}: ${count}\n`;
             }
-
+        
             yamlContent += "\ncontent:\n";
             for (const [url, data] of Object.entries(recordedData)) {
-                yamlContent += ` - "${url}":\n`;
-                data.forEach(item => {
-                    const maxWindow = Math.max(...item.labels.map(l => l.window));
-                    const startTime = Math.max(0, item.timestamp - maxWindow);
-                    const endTime = item.timestamp + maxWindow;
-
-                    const startFormatted = formatTime(startTime);
-                    const endFormatted = formatTime(endTime);
-
-                    const labelTexts = item.labels.map(l => l.text).join(' ');
-
-                    yamlContent += `   - "${startFormatted}-${endFormatted}" #${labelTexts}\n`;
-                });
+                if (data && data.length > 0) {  // Only include URLs with timestamps
+                    yamlContent += ` - "${url}":\n`;
+                    data.forEach(item => {
+                        const maxWindow = Math.max(...item.labels.map(l => l.window));
+                        const startTime = Math.max(0, item.timestamp - maxWindow);
+                        const endTime = item.timestamp + maxWindow;
+        
+                        const startFormatted = formatTime(startTime);
+                        const endFormatted = formatTime(endTime);
+        
+                        const labelTexts = item.labels.map(l => l.text).join(' ');
+        
+                        yamlContent += `   - "${startFormatted}-${endFormatted}" #${labelTexts}\n`;
+                    });
+                }
             }
-
+        
             const blob = new Blob([yamlContent], { type: 'text/yaml' });
             const url = URL.createObjectURL(blob);
-
+        
             const a = document.createElement('a');
             a.href = url;
             a.download = fileName;
             document.body.appendChild(a);
             a.click();
-
+        
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
@@ -475,7 +481,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (confirmation) {
                 recordedData = {};
                 updateTimestampsList();
-            
+
                 // Save the updated recorded data to storage
                 saveRecordedDataToStorage();
             }
